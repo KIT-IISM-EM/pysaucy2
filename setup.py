@@ -16,7 +16,7 @@ ext = [
 
 setup(
     name='pysaucy2',
-    version='0.2b',
+    version='0.2b1',
     packages=['pysaucy2'],
     url='https://github.com/KIT-IISM-EM/pysaucy2',
     license='MIT',

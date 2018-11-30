@@ -1,0 +1,300 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pysaucy2 &#8212; pysaucy2 0.2b1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pysaucy.examples" href="examples.html" />
+    <link rel="prev" title="Modules" href="modules.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="pysaucy.examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Modules"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.2b1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Modules</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pysaucy2">
+<h1>pysaucy2<a class="headerlink" href="#pysaucy2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pysaucy2">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pysaucy2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pysaucy2.Graph">
+<em class="property">class </em><code class="descclassname">pysaucy2.</code><code class="descname">Graph</code><a class="headerlink" href="#pysaucy2.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pysaucy2.Graph.adj">
+<code class="descname">adj</code><a class="headerlink" href="#pysaucy2.Graph.adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the adjacency relations. These can only be interpreted in combination with <code class="docutils literal"><span class="pre">edg</span></code>.
+The values of the list are index pointers regarding <code class="docutils literal"><span class="pre">edg</span></code>.</p>
+<p>If the graph is undirected, the length is <span class="math">\(n+1\)</span>, else <span class="math">\(2n+2\)</span>.
+In the directed case, <code class="docutils literal"><span class="pre">adj[i]</span></code> (<span class="math">\(0 \leq i &lt; n\)</span>) corresponds to the index in <code class="docutils literal"><span class="pre">edg</span></code> at which
+the outgoing edge relations of node <span class="math">\(i\)</span> begin.
+The last relation of this node is at position <code class="docutils literal"><span class="pre">adj[i+1]-1</span></code>.
+The positions <span class="math">\(n+1 \leq i &lt; 2n+2\)</span> correspond to the indices in <code class="docutils literal"><span class="pre">edg</span></code> that are the incoming edge
+relations (e.g. at <code class="docutils literal"><span class="pre">adj[n+1+i]</span></code> in <code class="docutils literal"><span class="pre">edg</span></code> is the first incoming edge that points towards node <span class="math">\(i\)</span>).
+If <code class="docutils literal"><span class="pre">adj[i]</span> <span class="pre">==</span> <span class="pre">adj[i+1]</span></code> node <span class="math">\(i\)</span> has no incoming/outgoing edges.</p>
+<p>In the undirected case, incoming and outgoing edges are ‘the same’.
+Therefore, <code class="docutils literal"><span class="pre">adj[i]</span></code> is the index of the first edge incident to node <span class="math">\(i\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of adjacency relations in the format that saucy needs</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.colors">
+<code class="descname">colors</code><a class="headerlink" href="#pysaucy2.Graph.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the node colors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of colors <span class="math">\(0 \leq c &lt; n\)</span> for each node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.directed">
+<code class="descname">directed</code><a class="headerlink" href="#pysaucy2.Graph.directed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the graph directed?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Directedness of the graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.edg">
+<code class="descname">edg</code><a class="headerlink" href="#pysaucy2.Graph.edg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the edge relations. These can only be interpreted in combination with <code class="docutils literal"><span class="pre">adj</span></code>.
+See the detailed description at <code class="xref py py-meth docutils literal"><span class="pre">graph.Graph.adj()</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of edge relations in the format that saucy needs</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.m">
+<code class="descname">m</code><a class="headerlink" href="#pysaucy2.Graph.m" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Number of edges of the graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.n">
+<code class="descname">n</code><a class="headerlink" href="#pysaucy2.Graph.n" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Number of nodes of the graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysaucy2.Graph.orbits">
+<code class="descname">orbits</code><a class="headerlink" href="#pysaucy2.Graph.orbits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the orbit partition as list of orbit ids.
+:return:
+:rtype: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysaucy2.Graph.run_saucy">
+<code class="descname">run_saucy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysaucy2.Graph.run_saucy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pysaucy2.Graph.to_edge_lists">
+<code class="descname">to_edge_lists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysaucy2.Graph.to_edge_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this graph back to a list of adjacency lists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Adjacency edge lists</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pysaucy2.run_saucy">
+<code class="descclassname">pysaucy2.</code><code class="descname">run_saucy</code><span class="sig-paren">(</span><em>g</em>, <em>colors=None</em>, <em>on_automorphism=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysaucy2.run_saucy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the saucy call.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Using the <em>on_automorphism</em> callback is quite expensive and will slow down the algorithm
+significantly if many generators are found.</p>
+</div>
+<p>The automorphism group size is defined by <em>group size base</em> <span class="math">\(b\)</span> and
+<em>group size exponent</em> <span class="math">\(e\)</span> as <span class="math">\(b\cdot10^e\)</span>.</p>
+<p>The returned <em>orbits</em> are a list of orbit ids where <code class="docutils literal"><span class="pre">orbits[i]</span></code> is some (integer) orbit id
+and all nodes on the same orbit have the same id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>g</strong> (<cite>pysaucy2.graph.Graph</cite>) – The graph</li>
+<li><strong>colors</strong> – (Optional) A partition of node colors of length <span class="math">\(n\)</span></li>
+<li><strong>on_automorphism</strong> – An optional callback function with signature (graph, permutation, support)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(group size base, group size exponent, levels, nodes, bads, number of generators, support, orbits)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pysaucy2</a><ul>
+<li><a class="reference internal" href="#module-pysaucy2">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">Modules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">pysaucy.examples</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pysaucy2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="pysaucy.examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Modules"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.2b1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Fabian Ball.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>
