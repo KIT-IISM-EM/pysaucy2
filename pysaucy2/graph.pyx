@@ -5,8 +5,8 @@
 from cpython.ref cimport PyObject
 from libc.stdlib cimport malloc, calloc, free
 
-cimport csaucy
-from datastructures cimport IntArray
+from . cimport csaucy
+from .datastructures cimport IntArray
 
 import warnings
 
@@ -80,10 +80,11 @@ cdef class Graph:
             self.colors = colors
 
         # Index padding as replacement for C memory arithmetic
-        pad_n = n+1 if directed else 0
-        pad_m = m if directed else 0
+        cdef int pad_n = n+1 if directed else 0
+        cdef int pad_m = m if directed else 0
 
-        cdef int j
+        cdef int i, j
+        # cdef int j
         # (1) Count outgoing and incoming edges for each node
         for i, adjacent_nodes in enumerate(edge_lists):
             self._graph.adj[i] += len(adjacent_nodes)  # Outgoing
@@ -119,14 +120,18 @@ cdef class Graph:
         self._rewind_values()
 
     cdef _cumulate_values(self, int f, int l):
+        cdef int i, s, t
+
         s = self._graph.adj[f]
         self._graph.adj[f] = 0
+
         for i in range(f+1, l + 1):
             t = self._graph.adj[i]
             self._graph.adj[i] = self._graph.adj[i-1] + s
             s = t
 
     cdef _rewind_values(self):
+        cdef int i
         # Distinguish directed/undirected case
         if self._directed:
             # Outgoing edges
@@ -321,7 +326,7 @@ cdef class Graph:
         return [c for c in self._colors[:self.n]]
 
     @colors.setter
-    def colors(self, list colors):
+    def colors(self, list colors not None):
         """
         Set the node colors. This is not possible during a run of saucy.
 
@@ -341,7 +346,8 @@ cdef class Graph:
         if min(colors) < 0 or max(colors) >= n:
             raise ValueError('Colors must be in the range from 0 to {}'.format(n - 1))
 
-        min_col = 0
+        cdef int min_col = 0
+        cdef int i, c
         for i, c in enumerate(colors):
             if c > i or c > min_col + 1:
                 raise ValueError('Colors must be assigned in increasing order')

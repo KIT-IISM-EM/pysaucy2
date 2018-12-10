@@ -55,7 +55,7 @@ cdef class IntArray:
         """
         return self._n
 
-    def __getitem__(self, i):
+    def __getitem__(self, int i):
         """
         Get integer at position *i*
         """

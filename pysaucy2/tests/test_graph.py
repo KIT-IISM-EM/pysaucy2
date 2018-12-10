@@ -13,6 +13,7 @@ import pysaucy2
 
 
 class TestGraph(TestCase):
+    longMessage = True
 
     def setUp(self):
         self.k1000 = pysaucy2.examples.complete(1000)
@@ -162,6 +163,10 @@ class TestGraph(TestCase):
 
         g = pysaucy2.Graph(edge_lists)
 
+        ts = datetime.datetime.now()
         res = g.run_saucy()
+        run_time = datetime.datetime.now() - ts
 
         self.assertTupleEqual(res, (6.965030094591524, 1812, 5987, 12091, 0, 5986, 26536))
+        self.assertLessEqual(run_time.total_seconds(), 5, msg='This test may have failed because your running it '
+                                                              'on a slow machine')
