@@ -19,7 +19,7 @@ cdef class Graph:
         int* _colors
         int* _orbits
 
-    def __cinit__(self, list edge_lists, list colors = None, bint directed = False):
+    def __init__(self, edge_lists, colors=None, directed=False):
         """
         Create a new graph.
 
@@ -30,6 +30,9 @@ cdef class Graph:
         :param directed: (Optional) Determine that the graph is directed
         :type directed: boolean
         """
+        pass
+
+    def __cinit__(self, list edge_lists not None, list colors=None, bint directed=False):
         self._directed = directed
         self._running = False
 
@@ -151,7 +154,7 @@ cdef class Graph:
     cdef int _on_automorphism(int n, const int *gamma, int k, int *support, void *arg) except * with gil:
         cdef csaucy.saucy_data *data = <csaucy.saucy_data *> arg
 
-        Graph._update_orbits(data.partial_orbit_partition, n, gamma)
+        Graph._update_orbits(data.partial_orbit_partition, n, gamma, k, support)
 
         cdef object py_callback = <object> data.py_callback
 
@@ -162,9 +165,9 @@ cdef class Graph:
         return 1
 
     @staticmethod
-    cdef void _update_orbits(int *partial_orbits, int n, const int *perm) except *:
+    cdef void _update_orbits(int *partial_orbits, int n, const int *perm, int s, int *support) except *:
         cdef:
-            int i, j, k, oid, old_oid
+            int i, j, k, nid, oid, old_oid
             short *touched
 
         touched = <short *> calloc(n, sizeof(short))
@@ -172,21 +175,31 @@ cdef class Graph:
         if touched is NULL:
             raise MemoryError()
 
-        for i in range(n):
-            if perm[i] == i or touched[i]:  # i is fixed or the cycle which contains i was already visited
+        # for i in range(n):
+        for i in range(s):  # Only iterate over the nodes in the support (expectation: s << n)
+        # for nid in support[:s]:  # Only iterate over the nodes in the support (expectation: s << n)
+            nid = support[i]
+            # if perm[i] == i or touched[i]:  # i is fixed or the cycle which contains i was already visited
+            if touched[nid]:  # i is fixed or the cycle which contains i was already visited
                 continue
             else:
-                if partial_orbits[i] >= 0:  # Already colored
-                    oid = partial_orbits[i]
+                # if partial_orbits[i] >= 0:  # Already colored
+                if partial_orbits[nid] >= 0:  # Already colored
+                    # oid = partial_orbits[i]
+                    oid = partial_orbits[nid]
                 else:
-                    oid = i
-                    partial_orbits[i] = oid
+                    # oid = i
+                    # partial_orbits[i] = oid
+                    partial_orbits[nid] = oid = nid
 
-                touched[i] = True  # Set the current node as touched to prevent iterating over the cycle a 2nd time
+                # touched[i] = True  # Set the current node as touched to prevent iterating over the cycle a 2nd time
+                touched[nid] = True  # Set the current node as touched to prevent iterating over the cycle a 2nd time
 
-                j = perm[i]
+                # j = perm[i]
+                j = perm[nid]
 
-                while j != i:
+                # while j != i:
+                while j != nid:
                     if partial_orbits[j] < 0:  # Not colored yet
                         partial_orbits[j] = oid
                     elif partial_orbits[j] == oid:  # Already on the same orbit
@@ -203,11 +216,39 @@ cdef class Graph:
 
         free(touched)
 
-    cdef void _finalize_orbits(self):
+    cdef void _init_orbits(self) except *:
+        if self._orbits is NULL:
+            self._orbits = < int * > malloc(self._graph.n * sizeof(int))
+
+        if self._orbits is NULL:
+            raise MemoryError()
+
         cdef int i
         for i in range(self._graph.n):
-            if self._orbits[i] < 0:
+            self._orbits[i] = -1
+
+    cdef void _finalize_orbits(self):
+        cdef:
+            int i
+            int* labels
+
+        labels = <int *> malloc(self._graph.n * sizeof(int))
+        if labels is NULL:
+            raise MemoryError()
+
+        for i in range(self._graph.n):
+            labels[i] = -1
+
+        for i in range(self._graph.n):
+            if self._orbits[i] < 0:  # This happens only with trivial orbits
                 self._orbits[i] = i
+            else:
+                if labels[self._orbits[i]] == -1:
+                    labels[self._orbits[i]] = i
+
+                self._orbits[i] = labels[self._orbits[i]]
+
+        free(labels)
 
     @property
     def n(self):
@@ -340,20 +381,23 @@ cdef class Graph:
 
         return edge_lists
 
-    cdef void _init_orbits(self) except *:
-        if self._orbits is NULL:
-            self._orbits = <int *> malloc(self._graph.n * sizeof(int))
+    def run_saucy(self, on_automorphism=None):
+        """
+        Make the saucy call.
 
-        if self._orbits is NULL:
-            raise MemoryError()
+        .. warning::
+           Using the *on_automorphism* callback is quite expensive and will slow down the algorithm
+           significantly if many generators are found.
 
-        cdef int i
-        for i in range(self._graph.n):
-            self._orbits[i] = -1
+        The automorphism group size is defined by *group size base* :math:`b` and
+        *group size exponent* :math:`e` as :math:`b\cdot10^e`.
 
-    def run_saucy(self, on_automorphism = None):
+        :param on_automorphism: An optional callback function with signature (graph, permutation, support)
+        :return: (group size base, group size exponent, levels, nodes, bads, number of generators, support)
+        """
         cdef:
             csaucy.saucy *s
+            csaucy.saucy_graph *g
             csaucy.saucy_stats *stats
             csaucy.saucy_data *data
 

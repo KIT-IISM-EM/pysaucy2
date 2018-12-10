@@ -2,6 +2,18 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 
 cdef class IntArray:
+    """
+    This is a simple implementation of an immutable integer
+    array that supports indexing.
+    """
+    def __init__(self, array=None):
+        """
+        Create an IntArray instance.
+
+        :param array: An iterable of integers
+        """
+        pass
+
     def __cinit__(self, array=None):
         cdef int n
         if array is not None:
@@ -11,6 +23,8 @@ cdef class IntArray:
             # Fill data
             for idx, i in enumerate(array):
                 self._array[idx] = i
+        else:
+            self._init_array(0)
 
     def __dealloc__(self):
         if self._array is not NULL:
@@ -36,21 +50,18 @@ cdef class IntArray:
         return obj
 
     def __len__(self):
+        """
+        Get the array length
+        """
         return self._n
 
     def __getitem__(self, i):
+        """
+        Get integer at position *i*
+        """
         if 0 <= i < self._n:
             return self._array[i]
         elif 0 > i >= -self._n:
             return self._array[self._n + i]
         else:
             raise IndexError('IntArray index out of range')
-
-def test():
-    cdef int n = 3
-    cdef int* arr = <int *> PyMem_Malloc(n * sizeof(int))
-    cdef IntArray iarr
-    arr[0] = 0
-    arr[1] = 2
-    arr[2] = 1
-    iarr = IntArray.from_ptr(arr, n)

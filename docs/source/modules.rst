@@ -7,4 +7,6 @@ Modules
    :caption: Contents:
 
    pysaucy2
+   graph
    examples
+   datastructures

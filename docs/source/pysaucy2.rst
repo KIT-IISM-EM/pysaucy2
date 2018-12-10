@@ -6,7 +6,7 @@ Module contents
 ---------------
 
 .. automodule:: pysaucy2
-    :members:
+    :members: run_saucy
     :undoc-members:
     :show-inheritance:
 

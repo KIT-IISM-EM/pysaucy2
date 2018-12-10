@@ -5,6 +5,8 @@
 from __future__ import absolute_import
 
 import collections
+import datetime
+import os
 from unittest import TestCase
 
 import pysaucy2
@@ -120,6 +122,8 @@ class TestGraph(TestCase):
         result = pysaucy2.run_saucy(karate, on_automorphism=on_aut)
 
         self.assertEqual(result[5], len(generators))
+        self.assertIsInstance(generators[0], pysaucy2.datastructures.IntArray)
+        self.assertEqual(len(generators[0]), 34)
 
         # Too few parameters
         def invalid_callback_1(a, b):
@@ -142,3 +146,22 @@ class TestGraph(TestCase):
         with self.assertRaises(TypeError):
             pysaucy2.run_saucy(karate, on_automorphism=invalid_callback_3)
 
+    def test_large_graph(self):
+        edge_lists = None
+
+        with open(os.path.abspath(os.path.join('pysaucy2', 'tests', 'inf-belgium_osm_saucy.graph'))) as graph_file:
+            n, m, _ = graph_file.readline().split()
+            n, m = int(n), int(m)
+            edge_lists = [[] for _ in range(n)]
+            for line in graph_file:
+                i, j = map(int, line.split())
+                if i > j:
+                    edge_lists[j].append(i)
+                else:
+                    edge_lists[i].append(j)
+
+        g = pysaucy2.Graph(edge_lists)
+
+        res = g.run_saucy()
+
+        self.assertTupleEqual(res, (6.965030094591524, 1812, 5987, 12091, 0, 5986, 26536))
