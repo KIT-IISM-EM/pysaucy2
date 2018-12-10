@@ -44,7 +44,7 @@ cdef class Graph:
 
         # Test for duplicate edges and count edges
         cdef int m = 0
-        for n_id, edges in enumerate(edge_lists):
+        for edges in edge_lists:
             if len(edges) != len(set(edges)):
                 raise ValueError('There must not be any duplicate edges (multi-edges)')
 
@@ -159,7 +159,7 @@ cdef class Graph:
     cdef int _on_automorphism(int n, const int *gamma, int k, int *support, void *arg) except * with gil:
         cdef csaucy.saucy_data *data = <csaucy.saucy_data *> arg
 
-        Graph._update_orbits(data.partial_orbit_partition, n, gamma, k, support)
+        Graph._update_orbits(data.partial_orbit_partition, n, gamma, k, support, data.touched)
 
         cdef object py_callback = <object> data.py_callback
 
@@ -170,40 +170,23 @@ cdef class Graph:
         return 1
 
     @staticmethod
-    cdef void _update_orbits(int *partial_orbits, int n, const int *perm, int s, int *support) except *:
+    cdef void _update_orbits(int *partial_orbits, int n, const int *perm, int s, int *support, bint *touched) except *:
         cdef:
-            int i, j, k, nid, oid, old_oid
-            short *touched
+            int j, k, nid, oid, old_oid
 
-        touched = <short *> calloc(n, sizeof(short))
-
-        if touched is NULL:
-            raise MemoryError()
-
-        # for i in range(n):
-        for i in range(s):  # Only iterate over the nodes in the support (expectation: s << n)
-        # for nid in support[:s]:  # Only iterate over the nodes in the support (expectation: s << n)
-            nid = support[i]
-            # if perm[i] == i or touched[i]:  # i is fixed or the cycle which contains i was already visited
+        for nid in support[:s]:  # Only iterate over the nodes in the support (expectation: s << n)
             if touched[nid]:  # i is fixed or the cycle which contains i was already visited
                 continue
             else:
-                # if partial_orbits[i] >= 0:  # Already colored
                 if partial_orbits[nid] >= 0:  # Already colored
-                    # oid = partial_orbits[i]
                     oid = partial_orbits[nid]
                 else:
-                    # oid = i
-                    # partial_orbits[i] = oid
                     partial_orbits[nid] = oid = nid
 
-                # touched[i] = True  # Set the current node as touched to prevent iterating over the cycle a 2nd time
                 touched[nid] = True  # Set the current node as touched to prevent iterating over the cycle a 2nd time
 
-                # j = perm[i]
                 j = perm[nid]
 
-                # while j != i:
                 while j != nid:
                     if partial_orbits[j] < 0:  # Not colored yet
                         partial_orbits[j] = oid
@@ -219,7 +202,9 @@ cdef class Graph:
 
                     j = perm[j]
 
-        free(touched)
+        for nid in support[:s]:  # Reset touched nodes
+            touched[nid] = False
+
 
     cdef void _init_orbits(self) except *:
         if self._orbits is NULL:
@@ -431,6 +416,14 @@ cdef class Graph:
             free(stats)
             raise MemoryError()
 
+        data.touched = <bint *> calloc(g.n, sizeof(bint))
+
+        if data.touched is NULL:
+            free(data)
+            csaucy.saucy_free(s)
+            free(stats)
+            raise MemoryError()
+
         self._running = True  # Toggle the running state
         try:
             # This creates two C pointers, reference count is not increased
@@ -454,6 +447,7 @@ cdef class Graph:
         finally:
             self._running = False  # Toggle the running state
             csaucy.saucy_free(s)
+            free(data.touched)
             free(data)
             free(stats)
 

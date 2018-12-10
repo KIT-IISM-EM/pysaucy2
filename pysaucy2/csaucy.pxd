@@ -36,3 +36,4 @@ cdef struct saucy_data:
     PyObject *py_callback
     PyObject *py_graph
     int *partial_orbit_partition
+    bint *touched
