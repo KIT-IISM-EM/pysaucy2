@@ -27,6 +27,10 @@ The documentation can be found under https://KIT-IISM-EM.github.io/pysaucy2/html
 Changes
 -------
 
+0.3b1
+  - Improved (i.e. faster) orbit partition computation
+  - Added more tests
+  - Better documentation
 
 0.2b1
   - First public version
