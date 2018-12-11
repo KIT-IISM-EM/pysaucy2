@@ -3,7 +3,7 @@ Some example graphs or graph generators.
 
 .. moduleauthor:: Fabian Ball <fabian.ball@kit.edu>
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
 
 from .graph import Graph
 

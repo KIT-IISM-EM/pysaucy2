@@ -17,8 +17,8 @@ ext = [
 ]
 
 name = 'pysaucy2'
-version = '0.3'
-release = '0.3b1'
+version = '0.3.1'
+release = '0.3.1b1'
 setup(
     name=name,
     version=version,

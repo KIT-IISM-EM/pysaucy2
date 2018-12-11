@@ -22,8 +22,14 @@ cdef class Graph:
     def __init__(self, edge_lists, colors=None, directed=False):
         """
         Create a new graph.
+        The *edge_lists* parameter is a list of lists, where ``edge_lists[i]`` is a list
+        of adjacent nodes of node ``i``. Loops are allowed. If *directed* is False,
+        :math:`i \leq \min(\\texttt{edge_lists[i]})` must hold (i.e. edges are provided as i to j
+        for :math:`i<j` which means there is an undirected edge between those nodes).
+        If *directed* is True, ``edge_lists[i]`` contains all target nodes :math:`j`, i.e. directed
+        edges that point from :math:`i` to :math:`j`.
 
-        :param edge_lists:
+        :param edge_lists: An adjacency list of length :math:`n`
         :type edge_lists: list
         :param colors: (Optional) A list of colors, one color for each node
         :type colors: list
@@ -303,21 +309,22 @@ cdef class Graph:
     @property
     def colors(self):
         """
-        Get the node colors.
+        Get or set the node colors.
 
-        :return: A list of colors :math:`0 \leq c < n` for each node.
+        .. rubric:: getter
+
+        :return: A list of colors, :math:`0 \leq c < n` for each node.
         :rtype: list
+
+        .. rubric:: setter
+
+        :param colors: A list of colors, :math:`0 \leq c < n` for each node.
+        :type colors: list
         """
         return [c for c in self._colors[:self.n]]
 
     @colors.setter
     def colors(self, list colors not None):
-        """
-        Set the node colors. This is not possible during a run of saucy.
-
-        :param colors: A list of colors :math:`0 \leq c < n` for each node.
-        :type colors: list
-        """
         if self._running:
             warnings.warn('Can\'t change the colors during a running saucy search. '
                           'Did you try to call this function within the on_automorphism callback?')
@@ -345,7 +352,12 @@ cdef class Graph:
     def orbits(self):
         """
         Get the orbit partition as list of orbit ids.
-        :return:
+
+        You can access this property during a run of saucy to get the incompletely
+        explored orbits. Nodes not yet explored have the orbit id :math:`-1`.
+        Note, however, that the orbit ids are subject to change until completion!
+
+        :return: A list of orbit ids, :math:`0 \leq o < n` for each node.
         :rtype: list
         """
         if self._orbits is NULL:
@@ -377,7 +389,7 @@ cdef class Graph:
         Make the saucy call.
 
         .. warning::
-           Using the *on_automorphism* callback is quite expensive and will slow down the algorithm
+           Using the *on_automorphism* callback is very expensive and will slow down the algorithm
            significantly if many generators are found.
 
         The automorphism group size is defined by *group size base* :math:`b` and

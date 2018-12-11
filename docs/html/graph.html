@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pysaucy2.graph &#8212; pysaucy2 0.3b1 documentation</title>
+    <title>pysaucy2.graph &#8212; pysaucy2 0.3.1b1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3b1',
+        VERSION:     '0.3.1b1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="pysaucy2.html" title="pysaucy2"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.3b1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.3.1b1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Modules</a> &#187;</li> 
       </ul>
     </div>  
@@ -62,13 +62,19 @@
 <dt id="pysaucy2.graph.Graph">
 <em class="property">class </em><code class="descclassname">pysaucy2.graph.</code><code class="descname">Graph</code><span class="sig-paren">(</span><em>edge_lists</em>, <em>colors=None</em>, <em>directed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysaucy2.graph.Graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Create a new graph.</p>
+<p>Create a new graph.
+The <em>edge_lists</em> parameter is a list of lists, where <code class="docutils literal"><span class="pre">edge_lists[i]</span></code> is a list
+of adjacent nodes of node <code class="docutils literal"><span class="pre">i</span></code>. Loops are allowed. If <em>directed</em> is False,
+<span class="math">\(i \leq \min(\texttt{edge_lists[i]})\)</span> must hold (i.e. edges are provided as i to j
+for <span class="math">\(i&lt;j\)</span> which means there is an undirected edge between those nodes).
+If <em>directed</em> is True, <code class="docutils literal"><span class="pre">edge_lists[i]</span></code> contains all target nodes <span class="math">\(j\)</span>, i.e. directed
+edges that point from <span class="math">\(i\)</span> to <span class="math">\(j\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>edge_lists</strong> (<em>list</em>) – </li>
+<li><strong>edge_lists</strong> (<em>list</em>) – An adjacency list of length <span class="math">\(n\)</span></li>
 <li><strong>colors</strong> (<em>list</em>) – (Optional) A list of colors, one color for each node</li>
 <li><strong>directed</strong> (<em>boolean</em>) – (Optional) Determine that the graph is directed</li>
 </ul>
@@ -105,14 +111,24 @@ Therefore, <code class="docutils literal"><span class="pre">adj[i]</span></code>
 <dl class="attribute">
 <dt id="pysaucy2.graph.Graph.colors">
 <code class="descname">colors</code><a class="headerlink" href="#pysaucy2.graph.Graph.colors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the node colors.</p>
+<dd><p>Get or set the node colors.</p>
+<p class="rubric">getter</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of colors <span class="math">\(0 \leq c &lt; n\)</span> for each node.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of colors, <span class="math">\(0 \leq c &lt; n\)</span> for each node.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">setter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>colors</strong> (<em>list</em>) – A list of colors, <span class="math">\(0 \leq c &lt; n\)</span> for each node.</td>
 </tr>
 </tbody>
 </table>
@@ -184,9 +200,20 @@ See the detailed description at <code class="xref py py-meth docutils literal"><
 <dl class="attribute">
 <dt id="pysaucy2.graph.Graph.orbits">
 <code class="descname">orbits</code><a class="headerlink" href="#pysaucy2.graph.Graph.orbits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the orbit partition as list of orbit ids.
-:return:
-:rtype: list</p>
+<dd><p>Get the orbit partition as list of orbit ids.</p>
+<p>You can access this property during a run of saucy to get the incompletely
+explored orbits. Nodes not yet explored have the orbit id <span class="math">\(-1\)</span>.
+Note, however, that the orbit ids are subject to change until completion!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of orbit ids, <span class="math">\(0 \leq o &lt; n\)</span> for each node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -195,7 +222,7 @@ See the detailed description at <code class="xref py py-meth docutils literal"><
 <dd><p>Make the saucy call.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Using the <em>on_automorphism</em> callback is quite expensive and will slow down the algorithm
+<p class="last">Using the <em>on_automorphism</em> callback is very expensive and will slow down the algorithm
 significantly if many generators are found.</p>
 </div>
 <p>The automorphism group size is defined by <em>group size base</em> <span class="math">\(b\)</span> and
@@ -289,7 +316,7 @@ significantly if many generators are found.</p>
         <li class="right" >
           <a href="pysaucy2.html" title="pysaucy2"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.3b1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pysaucy2 0.3.1b1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Modules</a> &#187;</li> 
       </ul>
     </div>
